@@ -3,6 +3,7 @@ package com.esmee.mallapi.controller;
 import com.esmee.mallapi.controller.param.UserAddressSaveParam;
 import com.esmee.mallapi.controller.param.UserAddressUpdateParam;
 import com.esmee.mallapi.controller.vo.Result;
+import com.esmee.mallapi.controller.vo.ResultGenerator;
 import com.esmee.mallapi.controller.vo.UserAddressVO;
 import com.esmee.mallapi.model.User;
 import com.esmee.mallapi.model.UserAddress;
@@ -31,8 +32,7 @@ public class UserAddressController {
     @GetMapping("/address")
     //wrapper result 包括object本身和object的状态和别的信息
     public Result<List<UserAddressVO>> getAddressList(User logininUser){
-        //todo result generator?
-        return null;
+        return ResultGenerator.genSuccessResult(userAddressService.getUserAddressListByUserId(logininUser.getUserId()));
     }
 
     @GetMapping("/address/default")

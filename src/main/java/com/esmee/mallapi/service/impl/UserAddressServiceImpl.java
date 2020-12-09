@@ -1,8 +1,8 @@
 package com.esmee.mallapi.service.impl;
 
 import com.esmee.mallapi.common.ApiException;
+import com.esmee.mallapi.common.ServiceResultEnum;
 import com.esmee.mallapi.controller.vo.UserAddressVO;
-import com.esmee.mallapi.model.User;
 import com.esmee.mallapi.model.UserAddress;
 import com.esmee.mallapi.model.dao.UserAddressRepository;
 import com.esmee.mallapi.service.UserAddressService;
@@ -35,29 +35,25 @@ public class UserAddressServiceImpl implements UserAddressService {
             if(defaultAddress != null){
                 defaultAddress.setDefaultFlag((byte) 0);
                 defaultAddress.setUpdateTime(now);
-                int updateDefault = 0;
-
 
                 //update 和save 一样的
                 UserAddress updatedUserAddress = userAddressRepository.save(defaultAddress);
                 //update < 1更新没有成功 db 返回0
                 if(updatedUserAddress == null){
-                    // todo create exception
-                    // fixme the error message should be updated
-                    ApiException.fail("DB error");
+
+                    ApiException.fail(ServiceResultEnum.DB_ERROR.getResult());
                 }
             }
         }
-        //todo crete repo logic
+
         return userAddressRepository.save(userAddress).getAddressId() > 0;
 
     }
 
     @Override
     public List<UserAddressVO> getUserAddressListByUserId(Long userId) {
-        List<UserAddress> userAddressList = userAddressRepository.findUserAddressListByUserId(userId);
-        //fixme beanutil
-        List<UserAddressVO> userAddressVOList = BeanUtil.copyList(userAddressList, UserAddressVO.class);
+        List<UserAddress> addressList = userAddressRepository.findAllByUserId(userId);
+        List<UserAddressVO> userAddressVOList = BeanUtil.copyList(addressList, UserAddressVO.class);
         return userAddressVOList;
 
     }
@@ -66,15 +62,15 @@ public class UserAddressServiceImpl implements UserAddressService {
     public UserAddress getUserAddressByAddressId(Long addressId) {
         UserAddress userAddress = userAddressRepository.findByAddressId(addressId);
         if(userAddress == null){
-            //fixme the errror message should be update
-            ApiException.fail("DB error");
+
+            ApiException.fail(ServiceResultEnum.DATA_NOT_EXIST.getResult());
         }
         return userAddress;
     }
 
     @Override
     public UserAddress getDefaultAddressByUserId(Long userId) {
-        return userAddressRepository.findByUserId(userId);
+        return userAddressRepository.findDefaultByUserId(userId);
     }
 
     @Override
@@ -88,7 +84,7 @@ public class UserAddressServiceImpl implements UserAddressService {
                 defaultAddress.setUpdateTime(now);
                 int updateStatus = userAddressRepository.updateByUserId(userAddress.getUserId());
                 if(updateStatus < 1){
-                    ApiException.fail("DB error");
+                    ApiException.fail(ServiceResultEnum.DB_ERROR.getResult());
                 }
             }
         }

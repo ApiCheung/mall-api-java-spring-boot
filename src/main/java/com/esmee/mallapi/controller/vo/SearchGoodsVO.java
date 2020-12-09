@@ -15,7 +15,7 @@ public class SearchGoodsVO implements Serializable {
 
     private Long goodsId;
     private String goodsName;
-    private String goddsIntro;
+    private String goodsIntro;
     private String goodsCoverImg;
     private Integer sellingPrice;
 }
